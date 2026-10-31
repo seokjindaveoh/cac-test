@@ -76,7 +76,7 @@ def accuracy(eval_json, pred_npz):
     ax.set_ylim(90, 100)
     ax.set_ylabel('Test accuracy (%)')
     ax.set_title('Saved 5-bit weights, 3,097 test images')
-    ax.legend(frameon=False, loc='lower right')
+    ax.legend(frameon=False, loc='upper center', ncol=2, fontsize=9)   # above the bars (they end near 96 %)
     P = np.load(pred_npz)
     y, p = P['y'], P['pred']
     C = np.zeros((3, 3), int)

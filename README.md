@@ -3,18 +3,23 @@
 ISSCC 2027 Code-a-Chip submission. One Jupyter notebook, [`ep_dr_oss.ipynb`](ep_dr_oss.ipynb), runs the whole design loop from top to bottom.
 
 ## Authors
-| Author | Affiliation | Contribution |
-|---|---|---|
-| Seokjin Oh (first author) | Texas A&M University | EP circuit and chip design; the automated design loop (training, deck and layout generators, digital flow, routing, signoff); the notebook |
-| Jinzhan Li (second author) | Texas A&M University | verification of the automated design loop; data and loop verification of the network's inference and training |
-| Suin Yi (advisor, corresponding author) | Texas A&M University | supervision |
+**Seokjin Oh, Jinzhan Li, and Suin Yi†**<br>
+Department of Electrical and Computer Engineering, Texas A&M University, College Station, TX 77843, USA<br>
+seokjindaveoh@tamu.edu, jl90@tamu.edu, yisuin@tamu.edu<br>
+† Corresponding author: Suin Yi (yisuin@tamu.edu)
+
+**Contributions**
+- **S. Oh** — original author of the EP circuit implemented here (Micromachines 2023 [5]) and of its weight-update circuit (Nanomaterials 2025 [6]). Planned this chip and its design, defined the automated design flow, and implemented it end to end: network training on the circuit model, SPICE deck generators and circuit simulation, analog and array layout generators, digital RTL and the Yosys + OpenROAD flow, chip netlist, placement, routing, pad ring, DRC / LVS signoff, and the notebook.
+- **J. Li** — verification of the automated design loop; data and loop verification of the network's inference and training.
+- **S. Yi** — supervision.
 
 ## What this work is about
 - **Equilibrium propagation (EP)** trains a network with local rules: each weight changes from the voltages at its own two ends, measured once in a free phase and once in a slightly nudged phase [1, 2].
   Backpropagation needs a separate global backward pass through the whole network; EP does not, which makes it attractive for energy-efficient on-chip learning.
 - **The catch in software**: each EP step needs the equilibrium of the network (the minimum of its energy), which a computer has to find with an iterative numerical solver for every image.
-- **In a circuit** this step disappears: a resistive network settles to that equilibrium by itself (Kirchhoff's laws), so the cost that makes EP slow in software is paid by physics [3, 4].
-- **This notebook** turns the EP circuit of our earlier work [5, 6] (two 1T1R crossbars, free and nudge, with a sign-rule weight-update circuit) into an **automated design loop**:
+- **In a circuit** this step disappears: a resistive network settles to that equilibrium by itself (Kirchhoff's laws), so the cost that makes EP slow in software is paid by physics [2, 3].
+- **Main content: this work implements the circuit of S. Oh et al., *Micromachines* 2023 [5]** (cited by 21, Google Scholar, Oct. 2026) — two 1T1R crossbars (free and nudge), diode-clamp neurons, and the sign-based weight update with a fixed conductance step; the weight-update circuit follows [6] (cited by 4).
+- **This notebook** turns that circuit into an **automated design loop**:
   network training on the circuit model → SPICE checks of every block → layout generators → digital blocks from RTL → chip assembly → DRC / LVS, all with open-source tools.
 
 **What the loop produces** (details and numbers in section 14 of the notebook)
@@ -117,11 +122,13 @@ The step-by-step times are in `results/` and at the end of the notebook.
 
 ## References
 1. B. Scellier and Y. Bengio, "Equilibrium propagation: bridging the gap between energy-based models and backpropagation," *Frontiers in Computational Neuroscience*, vol. 11, 24, 2017.
-2. J. Kendall, R. Pantone, K. Manickavasagam, Y. Bengio, B. Scellier, "Training end-to-end analog neural networks with equilibrium propagation," arXiv:2006.01981, 2020.
-3. B. Scellier and S. Mishra, "A fast algorithm to simulate nonlinear resistive networks," ICML 2024.
+2. J. Kendall, R. Pantone, K. Manickavasagam, Y. Bengio, and B. Scellier, "Training end-to-end analog neural networks with equilibrium propagation," arXiv:2006.01981, 2020.
+3. B. Scellier and S. Mishra, "A fast algorithm to simulate nonlinear resistive networks," *Proc. ICML*, 2024.
 4. SkyWater SKY130 PDK (open_pdks) and its ReRAM cell model `sky130_fd_pr_reram__reram_cell`.
-5. S. Oh et al., *Micromachines*, vol. 14, no. 7, 1367, 2023 — two-crossbar equilibrium-propagation circuit and sign update rule.
-6. S. Oh et al., *Nanomaterials*, vol. 15, 213, 2025 — weight-update circuit.
+5. **S. Oh, J. An, S. Cho, R. Yoon, and K.-S. Min, "Memristor crossbar circuits implementing equilibrium propagation for on-device learning," *Micromachines*, vol. 14, no. 7, 1367, 2023, doi:10.3390/mi14071367 (cited by 21, Google Scholar, Oct. 2026) — the circuit implemented in this work.**
+6. S. Oh, R. Yoon, and K.-S. Min, "Defect-tolerant memristor crossbar circuits for local learning neural networks," *Nanomaterials*, vol. 15, no. 3, 213, 2025, doi:10.3390/nano15030213 (cited by 4, Google Scholar, Oct. 2026) — weight-update circuit.
+7. R. Hogervorst, J. P. Tero, R. G. H. Eschauzier, and J. H. Huijsing, "A compact power-efficient 3 V CMOS rail-to-rail input/output operational amplifier for VLSI cell libraries," *IEEE J. Solid-State Circuits*, vol. 29, no. 12, pp. 1505–1513, 1994.
+8. IIC-OSIC-TOOLS (H. Pretl et al., JKU), Yosys, OpenROAD, Magic, Netgen, Xyce, Icarus Verilog, KLayout, volare.
 
 ## License
 Apache License 2.0, see [`LICENSE`](LICENSE). Copyright 2026 the authors.
