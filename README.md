@@ -1,4 +1,4 @@
-# Analog Compute-in-Memory Automated Loop: Equilibrium-Propagation Inference and Training in the Chip Domain, from Network Training to a DRC/LVS-Clean SKY130 Chip with Open-Source Tools
+# Analog Compute-in-Memory Automated Loop: Equilibrium-Propagation Inference and Training in the Chip Domain, from Network Training to a SKY130 Chip Layout with Open-Source Tools
 
 Code-a-Chip (CaC) notebook: equilibrium propagation (EP) on a 1T1R RRAM crossbar chip. One Jupyter notebook, [`ep_cim_loop.ipynb`](ep_cim_loop.ipynb), runs the whole design loop from top to bottom.
 
@@ -9,7 +9,7 @@ seokjindaveoh@tamu.edu, jl90@tamu.edu, yisuin@tamu.edu<br>
 † Corresponding author: Suin Yi (yisuin@tamu.edu)
 
 **Contributions**
-- **S. Oh** — original author of the EP circuit implemented here (Micromachines 2023 [5]) and of its weight-update circuit (Nanomaterials 2025 [6]). Planned this chip and its design, defined the automated design flow, and implemented it end to end: network training on the circuit model, SPICE deck generators and circuit simulation, analog and array layout generators, digital RTL and the Yosys + OpenROAD flow, chip netlist, placement, routing, pad ring, DRC / LVS signoff, and the notebook.
+- **S. Oh** — original author of the EP circuit implemented here (Micromachines 2023 [3]) and of its weight-update circuit (Nanomaterials 2025 [4]). Planned this chip and its design, defined the automated design flow, and implemented it end to end: network training on the circuit model, SPICE deck generators and circuit simulation, analog and array layout generators, digital RTL and the Yosys + OpenROAD flow, chip netlist, placement, routing, pad ring, DRC / LVS signoff, and the notebook.
 - **J. Li** — verification of the automated design loop; data and loop verification of the network's inference and training.
 - **S. Yi** — supervision.
 
@@ -17,8 +17,8 @@ seokjindaveoh@tamu.edu, jl90@tamu.edu, yisuin@tamu.edu<br>
 - **Equilibrium propagation (EP)** trains a network with local rules: each weight changes from the voltages at its own two ends, measured once in a free phase and once in a slightly nudged phase [1, 2].
   Backpropagation needs a separate global backward pass through the whole network; EP does not, which makes it attractive for energy-efficient on-chip learning.
 - **The catch in software**: each EP step needs the equilibrium of the network (the minimum of its energy), which a computer has to find with an iterative numerical solver for every image.
-- **In a circuit** this step disappears: a resistive network settles to that equilibrium by itself (Kirchhoff's laws), so the cost that makes EP slow in software is paid by physics [2, 3].
-- **Main content: EP of Scellier and Bengio 2017 [1] on a chip, with the architecture of two works together** — the deep resistive network (DRN) of Scellier and Mishra 2024 [3] for the network structure, and the memristor-crossbar EP circuit of S. Oh et al., *Micromachines* 2023 [5] (cited by 21, Google Scholar, Oct. 2026) for the circuit: two 1T1R crossbars (free and nudge), diode-clamp neurons, and the sign-based weight update with a fixed conductance step. The weight-update circuit follows [6] (cited by 4).
+- **In a circuit** this step disappears: a resistive network settles to that equilibrium by itself (Kirchhoff's laws), so the cost that makes EP slow in software is paid by physics [2, 5].
+- **Main content: EP of Scellier and Bengio 2017 [1] on a chip, with the architecture of two works together** — the deep resistive network (DRN) of Scellier 2024 [5] for the network structure, and the memristor-crossbar EP circuit of S. Oh et al., *Micromachines* 2023 [3] (cited by 21, Google Scholar, Oct. 2026) for the circuit: two 1T1R crossbars (free and nudge), diode-clamp neurons, and the sign-based weight update with a fixed conductance step. The weight-update circuit follows [4] (cited by 4).
 - **This notebook** turns that architecture into an **automated design loop**:
   network training on the circuit model → SPICE checks of every block → layout generators → digital blocks from RTL → chip assembly → DRC / LVS, all with open-source tools.
 
@@ -48,7 +48,7 @@ ep_cim_loop/
     │   ├── layout/top/                     chip netlist, placement, routing, pad ring          sections 9–11
     │   └── opensrc/                        Magic / Netgen signoff, Xyce deck converters        sections 7, 12
     ├── cac_ep/sim/ep_demo/              SkyWater 5 V device models, ReRAM Verilog-A model
-    └── sern_hog_classab_opamp/             op-amp layout generator                             section 5.4
+    └── sern_hog_classab_opamp/             op-amp layout generator                             section 5.8
 ```
 
 | Path | Content |
@@ -90,8 +90,9 @@ ep_cim_loop/
 
 **2. Get this folder**
 ```bash
-git clone https://github.com/seokjindaveoh/cac-test.git
-cd cac-test
+git clone --depth 1 --filter=blob:none --sparse https://github.com/sscs-ose/sscs-ose-code-a-chip.github.io code-a-chip
+git -C code-a-chip sparse-checkout set ISSCC27/submitted_notebooks/ep_cim_loop     # only this folder
+cd code-a-chip/ISSCC27/submitted_notebooks/ep_cim_loop
 ```
 
 **3. Build the image** (once; about 10–20 min and 18 GB, mostly the base image download)
@@ -141,7 +142,7 @@ bash env/run_apptainer.sh ../cac_run quick load      # or: full full  (run folde
 The script pulls the base image from Docker Hub, repeats steps 2–4 of the Dockerfile in user space and runs the notebook with papermill (outputs in `../cac_run/home/out`). If the compute nodes have no direct internet, load the site's web proxy first (`http_proxy`, `https_proxy`).
 
 ### Other ways (QUICK)
-- **Google Colab** — [open the notebook in Colab](https://colab.research.google.com/github/seokjindaveoh/cac-test/blob/main/ep_cim_loop.ipynb) and choose *Run all*. The setup cell clones this repository, downloads a prebuilt Xyce bundle (release `v1` of this repository) and installs the other tools with apt / conda / pip (`env/colab_setup.sh`).
+- **Google Colab** — [open the notebook in Colab](https://colab.research.google.com/github/sscs-ose/sscs-ose-code-a-chip.github.io/blob/main/ISSCC27/submitted_notebooks/ep_cim_loop/ep_cim_loop.ipynb) and choose *Run all*. The setup cell takes this folder from the official Code-a-Chip repository (sparse checkout; before the pull request is merged, from the submission fork), downloads a prebuilt Xyce bundle (a release file, 101 MB, too large for the repository) and installs the other tools with apt / conda / pip (`env/colab_setup.sh`).
 - **Linux without Docker and without root** — `pip install --user -r env/requirements.txt`, then run the notebook; the setup cell installs the tools in user space (`env/setup.sh`: Magic, Netgen, OpenROAD, Yosys and Icarus Verilog from conda-forge / public builds, the PDK, and a source build of Xyce, about 2 h once). Tool builds differ from the Docker image, so use it for QUICK.
 
 ## Modes and measured times
@@ -150,7 +151,7 @@ One cluster node, 16 cores, 64 GB, in the Docker image (run with Singularity, sa
 | Mode | Parameters | What runs | Time |
 |---|---|---|---:|
 | **QUICK** | `MODE=quick TRAIN=load` | saved weights; Xyce weight-update block; all layout generators; four digital blocks with Yosys + OpenROAD; netlist, placement, routing, pad ring; core + die LVS; DRC of the array block | 29 min |
-| **FULL** | `MODE=full TRAIN=load` | QUICK + Xyce chip read deck + Xyce read circuit on all 3,097 test images + DRC of the full core and die | 106 min |
+| **FULL** | `MODE=full TRAIN=load` | QUICK + Xyce chip read deck + Xyce read circuit on all 3,097 test images + DRC of the full core and die | 112 min |
 | **FULL + training** | `MODE=full TRAIN=full` | FULL + EP training (seed 0, 165,000 training images); the new weights are compared with the saved weights | 144 min |
 
 The step-by-step times are in `results/` and at the end of the notebook.
@@ -166,7 +167,7 @@ The step-by-step times are in `results/` and at the end of the notebook.
 | Base image | `hpretl/iic-osic-tools:2026.10` |
 | OpenROAD, Magic, Netgen, KLayout | 26Q4-407, 8.3.685, 1.5.324, 0.30.12 |
 | Xyce | 7.10 |
-| Yosys, Icarus Verilog | from the image |
+| Yosys, Icarus Verilog | 0.70, 14.0 (from the image) |
 | Python, PyTorch (CPU), NumPy, Matplotlib | 3.12.3, 2.5.1, 2.2.6, 3.11.2 |
 | SKY130 PDK | open_pdks `c6d73a35` (volare) |
 
@@ -178,11 +179,11 @@ The step-by-step times are in `results/` and at the end of the notebook.
 ## References
 1. B. Scellier and Y. Bengio, "Equilibrium propagation: bridging the gap between energy-based models and backpropagation," *Frontiers in Computational Neuroscience*, vol. 11, 24, 2017.
 2. J. Kendall, R. Pantone, K. Manickavasagam, Y. Bengio, and B. Scellier, "Training end-to-end analog neural networks with equilibrium propagation," arXiv:2006.01981, 2020.
-3. B. Scellier and S. Mishra, "A fast algorithm to simulate nonlinear resistive networks," *Proc. ICML*, 2024.
-4. SkyWater SKY130 PDK (open_pdks) and its ReRAM cell model `sky130_fd_pr_reram__reram_cell`.
-5. **S. Oh, J. An, S. Cho, R. Yoon, and K.-S. Min, "Memristor crossbar circuits implementing equilibrium propagation for on-device learning," *Micromachines*, vol. 14, no. 7, 1367, 2023, doi:10.3390/mi14071367 (cited by 21, Google Scholar, Oct. 2026) — the circuit implemented in this work.**
-6. S. Oh, R. Yoon, and K.-S. Min, "Defect-tolerant memristor crossbar circuits for local learning neural networks," *Nanomaterials*, vol. 15, no. 3, 213, 2025, doi:10.3390/nano15030213 (cited by 4, Google Scholar, Oct. 2026) — weight-update circuit.
-7. R. Hogervorst, J. P. Tero, R. G. H. Eschauzier, and J. H. Huijsing, "A compact power-efficient 3 V CMOS rail-to-rail input/output operational amplifier for VLSI cell libraries," *IEEE J. Solid-State Circuits*, vol. 29, no. 12, pp. 1505–1513, 1994.
+3. **S. Oh, J. An, S. Cho, R. Yoon, and K.-S. Min, "Memristor crossbar circuits implementing equilibrium propagation for on-device learning," *Micromachines*, vol. 14, no. 7, 1367, 2023, doi:10.3390/mi14071367 (cited by 21, Google Scholar, Oct. 2026) — the circuit implemented in this work.**
+4. S. Oh, R. Yoon, and K.-S. Min, "Defect-tolerant memristor crossbar circuits for local learning neural networks," *Nanomaterials*, vol. 15, no. 3, 213, 2025, doi:10.3390/nano15030213 (cited by 4, Google Scholar, Oct. 2026) — weight-update circuit.
+5. B. Scellier, "A fast algorithm to simulate nonlinear resistive networks," *Proc. ICML*, 2024 — deep resistive network (DRN).
+6. R. Hogervorst, J. P. Tero, R. G. H. Eschauzier, and J. H. Huijsing, "A compact power-efficient 3 V CMOS rail-to-rail input/output operational amplifier for VLSI cell libraries," *IEEE J. Solid-State Circuits*, vol. 29, no. 12, pp. 1505–1513, 1994.
+7. SkyWater SKY130 PDK (open_pdks) and its ReRAM cell model `sky130_fd_pr_reram__reram_cell`.
 8. IIC-OSIC-TOOLS (H. Pretl et al., JKU), Yosys, OpenROAD, Magic, Netgen, Xyce, Icarus Verilog, KLayout, volare.
 
 ## License

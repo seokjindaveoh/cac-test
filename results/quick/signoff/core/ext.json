@@ -3,11 +3,12 @@
  "top": "chip_core",
  "exit": 0,
  "flatglob": "nsw_* bias_beta_p* nudge_inj_p* wbuf_p* tp_ch_* tp_kv_*",
- "wall_s": 583.52,
- "maxrss_mb": 1310.9,
- "subckts": 54,
- "antenna_violations": 276,
+ "wall_s": 607.0,
+ "maxrss_mb": 1277.1,
+ "subckts": 55,
+ "antenna_violations": 266,
  "antenna_planes": {
-  "metal3": 276
+  "metal2": 12,
+  "metal3": 254
  }
 }
