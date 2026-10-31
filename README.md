@@ -18,8 +18,8 @@ seokjindaveoh@tamu.edu, jl90@tamu.edu, yisuin@tamu.edu<br>
   Backpropagation needs a separate global backward pass through the whole network; EP does not, which makes it attractive for energy-efficient on-chip learning.
 - **The catch in software**: each EP step needs the equilibrium of the network (the minimum of its energy), which a computer has to find with an iterative numerical solver for every image.
 - **In a circuit** this step disappears: a resistive network settles to that equilibrium by itself (Kirchhoff's laws), so the cost that makes EP slow in software is paid by physics [2, 3].
-- **Main content: this work implements the circuit of S. Oh et al., *Micromachines* 2023 [5]** (cited by 21, Google Scholar, Oct. 2026) — two 1T1R crossbars (free and nudge), diode-clamp neurons, and the sign-based weight update with a fixed conductance step; the weight-update circuit follows [6] (cited by 4).
-- **This notebook** turns that circuit into an **automated design loop**:
+- **Main content: EP of Scellier and Bengio 2017 [1] on a chip, with the architecture of two works together** — the deep resistive network (DRN) of Scellier and Mishra 2024 [3] for the network structure, and the memristor-crossbar EP circuit of S. Oh et al., *Micromachines* 2023 [5] (cited by 21, Google Scholar, Oct. 2026) for the circuit: two 1T1R crossbars (free and nudge), diode-clamp neurons, and the sign-based weight update with a fixed conductance step. The weight-update circuit follows [6] (cited by 4).
+- **This notebook** turns that architecture into an **automated design loop**:
   network training on the circuit model → SPICE checks of every block → layout generators → digital blocks from RTL → chip assembly → DRC / LVS, all with open-source tools.
 
 **What the loop produces** (details and numbers in section 14 of the notebook)
