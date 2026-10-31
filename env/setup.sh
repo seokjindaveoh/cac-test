@@ -1,5 +1,5 @@
 #!/bin/bash
-# Tool setup for ep_dr_oss.ipynb (ISSCC 2027 Code-a-Chip). Called by notebook cell (1); can also be run by hand.
+# Tool setup for ep_dr_oss.ipynb (Code-a-Chip, equilibrium-propagation chip). Called by notebook cell (1); can also be run by hand.
 #   bash env/setup.sh <ENV folder> [part ...]     parts = mamba eda dig openroad py pdk xyce  (default: all)
 # Docker image (env/Dockerfile): all EDA tools are already on PATH -> with no parts given, only "py" and "pdk" are checked (both return at once).
 # Otherwise everything is installed in user space (no root; needs python3 >= 3.10, curl, tar, bzip2 on x86_64 Linux):

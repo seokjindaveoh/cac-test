@@ -1,6 +1,6 @@
-# On-chip learning with a 1T1R RRAM crossbar in SKY130: from equilibrium-propagation training to a DRC/LVS-checked layout, open-source tools only
+# Analog Compute-in-Memory Automated Loop: Equilibrium-Propagation Inference and Training in the Chip Domain, from Network Training to a DRC/LVS-Clean SKY130 Chip with Open-Source Tools
 
-ISSCC 2027 Code-a-Chip submission. One Jupyter notebook, [`ep_dr_oss.ipynb`](ep_dr_oss.ipynb), runs the whole design loop from top to bottom.
+Code-a-Chip (CaC) notebook: equilibrium propagation (EP) on a 1T1R RRAM crossbar chip. One Jupyter notebook, [`ep_dr_oss.ipynb`](ep_dr_oss.ipynb), runs the whole design loop from top to bottom.
 
 ## Authors
 **Seokjin Oh, Jinzhan Li, and Suin Yi†**<br>

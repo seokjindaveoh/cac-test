@@ -1,4 +1,4 @@
-# Image for ep_dr_oss.ipynb (ISSCC 2027 Code-a-Chip): IIC-OSIC-TOOLS (Yosys, OpenROAD, Magic, Netgen, Xyce, Icarus Verilog, KLayout)
+# Image for ep_dr_oss.ipynb (Code-a-Chip, equilibrium-propagation chip): IIC-OSIC-TOOLS (Yosys, OpenROAD, Magic, Netgen, Xyce, Icarus Verilog, KLayout)
 # + pinned Python packages (CPU PyTorch) + pinned SKY130 PDK + this package.
 # Build (in the package folder):   docker build -t ep_dr_cac -f env/Dockerfile .
 # Jupyter:                         docker run --rm -p 127.0.0.1:8888:8888 ep_dr_cac      -> http://localhost:8888/lab/tree/ep_dr_oss.ipynb
