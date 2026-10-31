@@ -81,7 +81,7 @@ If the host folder is not writable, add `--user $(id -u):$(id -g)`.
 
 ### Other ways
 - **View only** — open the notebook on GitHub; it is saved with all outputs.
-- **Google Colab** — open the notebook in Colab and choose *Run all*; the setup cell installs the tools (`env/colab_setup.sh`).
+- **Google Colab** — [open the notebook in Colab](https://colab.research.google.com/github/seokjindaveoh/cac-test/blob/main/ep_dr_oss.ipynb) and choose *Run all*; the setup cell clones this repository and installs the tools (`env/colab_setup.sh`).
 - **Linux without Docker and without root** — `pip install --user -r env/requirements.txt`, then run the notebook; the setup cell installs the tools in user space (`env/setup.sh`: Magic, Netgen, OpenROAD, Yosys, Icarus Verilog, PDK, and a source build of Xyce; about 2 h once).
 
 ## Modes and measured times
