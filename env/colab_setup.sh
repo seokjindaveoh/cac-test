@@ -16,7 +16,7 @@
 set -o pipefail
 E=$(mkdir -p "${1:-$HOME/oss_env}" && cd "${1:-$HOME/oss_env}" && pwd)
 HERE=$(cd "$(dirname "$0")" && pwd)
-TOOLS_URL=${TOOLS_URL:-https://github.com/<OWNER>/<REPO>/releases/download/v1/ep_dr_tools_ubuntu22.tar.gz}
+TOOLS_URL=${TOOLS_URL:-https://github.com/seokjindaveoh/cac-test/releases/download/v1/ep_dr_tools_ubuntu22.tar.gz}
 TOOLS_SHA256=${TOOLS_SHA256:-b49b91562246a8789d4b4147952f40b08930373ba53ff47cbe5d6852aea683ad}   # sha256 of ep_dr_tools_ubuntu22.tar.gz (bundle v1)
 PR=${EP_PDK_ROOT:-$HOME/pdk/volare}
 PY=${PYTHON:-python3}
