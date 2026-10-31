@@ -1,4 +1,4 @@
-# Analog Compute-in-Memory Automated Loop: Equilibrium-Propagation Inference and Training in the Chip Domain, from Network Training to a SKY130 Chip Layout with Open-Source Tools
+# An Automated Open-Source Design Loop for Analog Compute-in-Memory: On-Chip Equilibrium-Propagation Inference and Training, from Network Training to a 1T1R RRAM Chip Layout in SKY130
 
 Code-a-Chip (CaC) notebook: equilibrium propagation (EP) on a 1T1R RRAM crossbar chip. One Jupyter notebook, [`ep_cim_loop.ipynb`](ep_cim_loop.ipynb), runs the whole design loop from top to bottom.
 
