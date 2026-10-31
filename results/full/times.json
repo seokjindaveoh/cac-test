@@ -1,0 +1,444 @@
+[
+ {
+  "name": "fix paths",
+  "group": "setup",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793343749.9144542,
+  "ok": true,
+  "sec": 0.2
+ },
+ {
+  "name": "install: mamba",
+  "group": "setup",
+  "mode": "full",
+  "sec": 0.0,
+  "ok": null,
+  "note": "tools already on PATH (container)",
+  "start": 1793343750.1763783
+ },
+ {
+  "name": "install: eda",
+  "group": "setup",
+  "mode": "full",
+  "sec": 0.0,
+  "ok": null,
+  "note": "tools already on PATH (container)",
+  "start": 1793343750.1766012
+ },
+ {
+  "name": "install: openroad",
+  "group": "setup",
+  "mode": "full",
+  "sec": 0.0,
+  "ok": null,
+  "note": "tools already on PATH (container)",
+  "start": 1793343750.1767268
+ },
+ {
+  "name": "install: openvaf",
+  "group": "setup",
+  "mode": "full",
+  "sec": 0.0,
+  "ok": null,
+  "note": "tools already on PATH (container)",
+  "start": 1793343750.1769276
+ },
+ {
+  "name": "install: ngspice",
+  "group": "setup",
+  "mode": "full",
+  "sec": 0.0,
+  "ok": null,
+  "note": "tools already on PATH (container)",
+  "start": 1793343750.177008
+ },
+ {
+  "name": "install: xyce",
+  "group": "setup",
+  "mode": "full",
+  "sec": 0.0,
+  "ok": null,
+  "note": "tools already on PATH (container)",
+  "start": 1793343750.1770835
+ },
+ {
+  "name": "install: py",
+  "group": "setup",
+  "mode": "full",
+  "train": "load",
+  "note": "PART py 3.0 ok",
+  "start": 1793343750.1772935,
+  "ok": true,
+  "sec": 3.1
+ },
+ {
+  "name": "install: pdk",
+  "group": "setup",
+  "mode": "full",
+  "train": "load",
+  "note": "PART pdk 0.0 ok",
+  "start": 1793343753.276987,
+  "ok": true,
+  "sec": 0.0
+ },
+ {
+  "name": "tool versions",
+  "group": "setup",
+  "mode": "full",
+  "train": "load",
+  "note": "8.3.685 | Netgen 1.5.324 compiled on Thu Oct 15 02:24:51 PM CEST 2026 | Warning: netgen command 'format' use fully-qualified name '::netgen::format' | 26Q4-407-geb14e40b7  | ** ngspice-47 : Circuit level simulation program | Xyce Release 7.10-opensource | OpenVAF-Reloaded osdi_0.5_20260820-26-gdd05b5e-dirty | python 3.12.3 klayout 0.30.12 torch 2.5.1+cpu numpy 2.2.6 | open_pdks c6d73a35f524070e85faff4a6a9eef49553ebc2b",
+  "start": 1793343753.3420057,
+  "ok": true,
+  "sec": 2.7
+ },
+ {
+  "name": "download MNIST",
+  "group": "train",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793343757.8135571,
+  "ok": true,
+  "sec": 8.6
+ },
+ {
+  "name": "training",
+  "group": "train",
+  "mode": "full",
+  "sec": 0.0,
+  "ok": null,
+  "note": "TRAIN=load: training skipped, saved weights out/weights/nostab_5bit.npz are used",
+  "start": 1793343766.4638531
+ },
+ {
+  "name": "inference: saved weights, 3 seeds (nostab_5bit.npz)",
+  "group": "sim",
+  "mode": "full",
+  "train": "load",
+  "note": "{\"5b_s0\": {\"test\": 0.958993, \"saved\": 0.958993, \"diff\": 0.0, \"p_neuron_uW\": 4912.35}, \"5b_s1\": {\"test\": 0.954795, \"saved\": 0.954795, \"diff\": 0.0, \"p_neuron_uW\": 4859.61}, \"5b_s2\": {\"test\": 0.957378, \"saved\": 0.957378, \"diff\": 0.0, \"p_neuron_uW\": 4930.31}, \"pred_acc_check\": 0.958993, \"sec\": 22.1}",
+  "start": 1793343766.6037486,
+  "ok": true,
+  "sec": 23.5
+ },
+ {
+  "name": "figure: test accuracy and confusion matrix",
+  "group": "sim",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793343790.1146407,
+  "ok": true,
+  "sec": 0.2
+ },
+ {
+  "name": "Xyce: weight-update block",
+  "group": "sim",
+  "mode": "full",
+  "train": "load",
+  "note": "WU block: cells 132/132, decisions match 132/132, COMP1/2 sign 132/132, |ΔV_f| path error median 6.3626 mV, power 2.7626 mW",
+  "start": 1793343791.061394,
+  "ok": true,
+  "sec": 104.7
+ },
+ {
+  "name": "figure: weight-update decisions",
+  "group": "sim",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793343895.7216055,
+  "ok": true,
+  "sec": 0.2
+ },
+ {
+  "name": "ngspice: RRAM write grid (OpenVAF → OSDI)",
+  "group": "sim",
+  "mode": "full",
+  "train": "load",
+  "note": "1R write grid: rows 392/392, rows with G changed by > 5 %: 143 (HSPICE: 143), ird ratio vs reference log [1.0, 1.0]",
+  "start": 1793343896.0125196,
+  "ok": true,
+  "sec": 29.1
+ },
+ {
+  "name": "figure: RRAM write waveform",
+  "group": "sim",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793343925.1519566,
+  "ok": true,
+  "sec": 0.4
+ },
+ {
+  "name": "Xyce: chip deck sys2",
+  "group": "sim",
+  "mode": "full",
+  "train": "load",
+  "note": "chip deck: all select nodes − Python max 1086.486 µV, first stage bit [24, 24], last stage bit [24, 24], power 6.6886 mW",
+  "start": 1793343925.6222343,
+  "ok": true,
+  "sec": 1733.7
+ },
+ {
+  "name": "RRAM write chip deck chip_write3",
+  "group": "sim",
+  "mode": "full",
+  "sec": 0.0,
+  "ok": null,
+  "note": "not yet with open-source tools: Xyce has no OSDI, ngspice + OSDI fails at the operating point",
+  "start": 1793345659.2862444
+ },
+ {
+  "name": "block: arr_w3s_128x64",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "XOR arr_w3s_128x64: same",
+  "start": 1793345659.422555,
+  "ok": true,
+  "sec": 5.6
+ },
+ {
+  "name": "block: analog (input_drive, nudge_inj, bias_beta, wbuf)",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "XOR input_drive: same; XOR nudge_inj: same; XOR bias_beta: same; XOR wbuf: same",
+  "start": 1793345664.9912052,
+  "ok": true,
+  "sec": 9.3
+ },
+ {
+  "name": "block: tg_n2 (switch macro)",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "XOR tg_n2: same",
+  "start": 1793345674.2795553,
+  "ok": true,
+  "sec": 0.3
+ },
+ {
+  "name": "block: HOG op-amp",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "XOR hog: same",
+  "start": 1793345674.547954,
+  "ok": true,
+  "sec": 0.3
+ },
+ {
+  "name": "block: wu (weight update)",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "XOR wu: same",
+  "start": 1793345674.8477347,
+  "ok": true,
+  "sec": 8.0
+ },
+ {
+  "name": "block: test patterns (4 blocks)",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "XOR tp_tl: same; XOR tp_br: same; XOR tp_bandl: same; XOR tp_bandr: same",
+  "start": 1793345682.8744624,
+  "ok": true,
+  "sec": 1.2
+ },
+ {
+  "name": "block: pad frame",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "XOR ep_die_real: same",
+  "start": 1793345684.0953918,
+  "ok": true,
+  "sec": 39.9
+ },
+ {
+  "name": "figure: block GDS",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793345723.9817681,
+  "ok": true,
+  "sec": 1.3
+ },
+ {
+  "name": "netlist: chip deck v3 + mk_top",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "deck check: boundary nodes 718, same 701, intentionally different 17, unexpected 0, wrong cell mapping 0, unclassified devices 0 | diff lines vs saved: cdl 0, v 0",
+  "start": 1793345725.4144435,
+  "ok": true,
+  "sec": 2.7
+ },
+ {
+  "name": "placement: mk_lef + place_real",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "LEF files different from saved: 0, place_real.json same",
+  "start": 1793345728.1190064,
+  "ok": true,
+  "sec": 17.6
+ },
+ {
+  "name": "figure: floorplan",
+  "group": "layout",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793345745.6818616,
+  "ok": true,
+  "sec": 0.2
+ },
+ {
+  "name": "pre-wiring (Python)",
+  "group": "route",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793345746.0449667,
+  "ok": true,
+  "sec": 25.4
+ },
+ {
+  "name": "OpenROAD global + detailed route",
+  "group": "route",
+  "mode": "full",
+  "train": "load",
+  "note": "detailed route iterations 4, last: [INFO DRT-0199]   Number of violations = 0. | ORR: route nets without wire 0 | [INFO ANT-0002] Found 0 net violations.",
+  "start": 1793345771.4916606,
+  "ok": true,
+  "sec": 61.4
+ },
+ {
+  "name": "DEF → GDS + check",
+  "group": "route",
+  "mode": "full",
+  "train": "load",
+  "note": "CHECK_GDS PASS",
+  "start": 1793345832.9301448,
+  "ok": true,
+  "sec": 0.8
+ },
+ {
+  "name": "figure: routed core GDS",
+  "group": "route",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793345833.762683,
+  "ok": true,
+  "sec": 0.7
+ },
+ {
+  "name": "pad ring + die",
+  "group": "route",
+  "mode": "full",
+  "train": "load",
+  "note": "CONN OK",
+  "start": 1793345834.6007948,
+  "ok": true,
+  "sec": 5.6
+ },
+ {
+  "name": "figure: die GDS",
+  "group": "route",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793345840.1679828,
+  "ok": true,
+  "sec": 1.0
+ },
+ {
+  "name": "Magic RRAM tech rebuild",
+  "group": "verify",
+  "mode": "full",
+  "train": "load",
+  "note": "diff lines vs copy in src/: 0",
+  "start": 1793345841.430412,
+  "ok": true,
+  "sec": 0.1
+ },
+ {
+  "name": "core extraction + antenna (Magic)",
+  "group": "verify",
+  "mode": "full",
+  "train": "load",
+  "note": "antenna 276, 584.44 s, 1310.8 MB",
+  "start": 1793345841.4974313,
+  "ok": true,
+  "sec": 584.5
+ },
+ {
+  "name": "core LVS (Netgen)",
+  "group": "verify",
+  "mode": "full",
+  "train": "load",
+  "note": "Circuits match uniquely. | top {'dev': [83, 83], 'nets': [1130, 1130], 'result': 'Netlists match with 32 symmetries with property errors.'}",
+  "start": 1793346426.0005927,
+  "ok": true,
+  "sec": 1.6
+ },
+ {
+  "name": "die extraction (Magic, LVS view)",
+  "group": "verify",
+  "mode": "full",
+  "train": "load",
+  "note": "141.51 s, 1400.4 MB",
+  "start": 1793346427.6220858,
+  "ok": true,
+  "sec": 141.6
+ },
+ {
+  "name": "die LVS (Netgen, pads as black boxes)",
+  "group": "verify",
+  "mode": "full",
+  "train": "load",
+  "note": "Circuits match uniquely. | top {'dev': [1, 1], 'nets': [25, 25], 'result': 'Netlists match uniquely.'}",
+  "start": 1793346569.2481976,
+  "ok": true,
+  "sec": 1.7
+ },
+ {
+  "name": "core DRC (Magic)",
+  "group": "verify",
+  "mode": "full",
+  "train": "load",
+  "note": "boxes 6459 (without hvntm.1: 6170) {'hvntm.1': 289, 'LU.3': 570, 'LU.2': 600, 'rpm.1': 20, 'nwell.8': 4980}",
+  "start": 1793346570.925144,
+  "ok": true,
+  "sec": 964.7
+ },
+ {
+  "name": "die DRC (Magic)",
+  "group": "verify",
+  "mode": "full",
+  "train": "load",
+  "note": "boxes 836125 (mostly inside the IO cells)",
+  "start": 1793347535.6466012,
+  "ok": true,
+  "sec": 1511.0
+ },
+ {
+  "name": "figure: DRC per rule and LVS table",
+  "group": "verify",
+  "mode": "full",
+  "train": "load",
+  "note": "",
+  "start": 1793349046.6709569,
+  "ok": true,
+  "sec": 0.3
+ }
+]
