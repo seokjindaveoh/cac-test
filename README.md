@@ -114,7 +114,7 @@ The setup cell finds every tool on `PATH` and installs nothing. Outputs stay ins
 **4b. Run without Jupyter, keep all outputs on the host**
 ```bash
 mkdir -p out
-docker run --rm --user $(id -u):$(id -g) -v "$PWD/out:/home/designer/out" ep_cim_loop \
+docker run --rm -v "$PWD/out:/home/designer/out" ep_cim_loop \
   python3 -m papermill ep_cim_loop.ipynb /home/designer/out/ep_cim_loop_out.ipynb \
   -p MODE full -p TRAIN full -p WORK /home/designer/out/work
 ```
@@ -129,7 +129,7 @@ docker run --rm --user $(id -u):$(id -g) -v "$PWD/out:/home/designer/out" ep_cim
 | Message | Fix |
 |---|---|
 | `permission denied ... docker.sock` | add your user to the `docker` group (step 1) and log in again |
-| cannot write to `./out` | keep `--user $(id -u):$(id -g)`, or `chmod a+w out` |
+| files in `./out` belong to root | `sudo chown -R $USER out` after the run (the container runs as its own user; do not add `--user`, the scripts update files inside the image) |
 | port 8888 already in use | `-p 127.0.0.1:8889:8888`, then open port 8889 |
 | downloads fail behind a proxy | `docker build --build-arg http_proxy --build-arg https_proxy ...` and `docker run -e http_proxy -e https_proxy ...` |
 | `no space left on device` | free disk with `docker system prune`; the image needs about 18 GB |

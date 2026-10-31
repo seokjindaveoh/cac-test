@@ -1366,7 +1366,7 @@ for c in used_cells:
     if c.startswith('sky130_fd_sc_hvl__'):
         continue
     src_l = LEF_FIX.get(c, TOPD / 'place' / 'lef' / f'{c}.lef')
-    shutil.copy(src_l, OUT / 'lef' / f'{c}.lef'); lefs.append(oly(OUT / 'lef' / f'{c}.lef'))
+    shutil.copyfile(src_l, OUT / 'lef' / f'{c}.lef'); lefs.append(oly(OUT / 'lef' / f'{c}.lef'))
 lefs.append(HVL_LEF_OLY)
 gds = []
 for c in used_cells:
@@ -1374,7 +1374,7 @@ for c in used_cells:
         continue
     g0 = [I.gds for I in INST.values() if I.cell == c][0]
     if Path(g0).resolve() != (OUT / 'gds' / f'{c}.gds').resolve():
-        shutil.copy(g0, OUT / 'gds' / f'{c}.gds')
+        shutil.copyfile(g0, OUT / 'gds' / f'{c}.gds')
     gds.append(oly(OUT / 'gds' / f'{c}.gds'))
     say(f'  merge {c}: {g0}')
 gds.append(HVL_GDS_OLY)
