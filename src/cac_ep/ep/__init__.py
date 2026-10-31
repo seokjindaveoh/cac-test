@@ -1,6 +1,6 @@
 """EP on-chip learning, written the way a PyTorch training script reads.
 
-    from isscc_cac.ep import EPConfig, EPNetwork, fit
+    from cac_ep.ep import EPConfig, EPNetwork, fit
 
     cfg = EPConfig()
     net = EPNetwork(cfg)               # layout, masks, conductance window

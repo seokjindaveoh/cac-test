@@ -1,9 +1,9 @@
-# Image for ep_dr_oss.ipynb (Code-a-Chip, equilibrium-propagation chip): IIC-OSIC-TOOLS (Yosys, OpenROAD, Magic, Netgen, Xyce, Icarus Verilog, KLayout)
+# Image for ep_cim_loop.ipynb (Code-a-Chip, equilibrium-propagation chip): IIC-OSIC-TOOLS (Yosys, OpenROAD, Magic, Netgen, Xyce, Icarus Verilog, KLayout)
 # + pinned Python packages (CPU PyTorch) + pinned SKY130 PDK + this package.
-# Build (in the package folder):   docker build -t ep_dr_cac -f env/Dockerfile .
-# Jupyter:                         docker run --rm -p 127.0.0.1:8888:8888 ep_dr_cac      -> http://localhost:8888/lab/tree/ep_dr_oss.ipynb
-# Without Jupyter (one command):   docker run --rm -v "$PWD/out:/home/designer/out" ep_dr_cac \
-#                                    python3 -m papermill ep_dr_oss.ipynb /home/designer/out/ep_dr_oss_out.ipynb -p MODE quick -p WORK /home/designer/out/work
+# Build (in the package folder):   docker build -t ep_cim_loop -f env/Dockerfile .
+# Jupyter:                         docker run --rm -p 127.0.0.1:8888:8888 ep_cim_loop      -> http://localhost:8888/lab/tree/ep_cim_loop.ipynb
+# Without Jupyter (one command):   docker run --rm -v "$PWD/out:/home/designer/out" ep_cim_loop \
+#                                    python3 -m papermill ep_cim_loop.ipynb /home/designer/out/ep_cim_loop_out.ipynb -p MODE quick -p WORK /home/designer/out/work
 FROM hpretl/iic-osic-tools:2026.10
 
 USER root
@@ -26,11 +26,11 @@ RUN python3 -m venv --system-site-packages /opt/venv \
 RUN /opt/venv/bin/volare enable --pdk sky130 --pdk-root /home/designer/pdk/volare c6d73a35f524070e85faff4a6a9eef49553ebc2b
 
 # This package (notebook, src/, env/, weights/, results/); writable for any --user
-COPY . /home/designer/ep_dr_cac
+COPY . /home/designer/ep_cim_loop
 RUN chmod -R a+rwX /home/designer
 
-WORKDIR /home/designer/ep_dr_cac
+WORKDIR /home/designer/ep_cim_loop
 EXPOSE 8888
 # The image's default entrypoint starts a VNC desktop; it is not needed here.
 ENTRYPOINT []
-CMD ["python3", "-m", "jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--IdentityProvider.token=", "--ServerApp.root_dir=/home/designer/ep_dr_cac"]
+CMD ["python3", "-m", "jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--IdentityProvider.token=", "--ServerApp.root_dir=/home/designer/ep_cim_loop"]

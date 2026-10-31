@@ -1,5 +1,5 @@
 #!/bin/bash
-# Fast tool install for ep_dr_oss.ipynb on Google Colab (Ubuntu 22.04 x86_64), or any Ubuntu 22.04 x86_64 machine.
+# Fast tool install for ep_cim_loop.ipynb on Google Colab (Ubuntu 22.04 x86_64), or any Ubuntu 22.04 x86_64 machine.
 #   bash env/colab_setup.sh [ENV folder]        (default ~/oss_env)   then put ENV/bin first on PATH
 # No compiling: Xyce 7.10 comes from a prebuilt bundle, the rest from public binaries.
 #   tools   : prebuilt bundle (Xyce 7.10 + Trilinos 14.4) from $TOOLS_URL,
@@ -94,7 +94,7 @@ do_dig() {   # Yosys (synthesis) + Icarus Verilog (RTL / gate simulation) for th
   [ -x "$E/dig/bin/yosys" ] && [ -x "$E/dig/bin/iverilog" ] || "$MM" create -y -q -p "$E/dig" -c conda-forge yosys iverilog || return 1
   "$MM" clean -y -a -q > /dev/null 2>&1
   wrap yosys "$E/dig/bin/yosys"; wrap iverilog "$E/dig/bin/iverilog"; wrap vvp "$E/dig/bin/vvp"
-  "$E/bin/yosys" -V && "$E/bin/iverilog" -V 2>&1 | head -1
+  "$E/bin/yosys" -V && { "$E/bin/iverilog" -V 2>&1 || true; } | head -1   # iverilog -V exits 1 (no input file)
 }
 
 do_py() {

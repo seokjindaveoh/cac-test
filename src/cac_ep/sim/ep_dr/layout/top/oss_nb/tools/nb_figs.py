@@ -1,4 +1,4 @@
-"""Figures for the reproduction notebook (ep_dr_oss.ipynb). Each function saves a PNG under <WORK>/figs and shows it inline.
+"""Figures for the reproduction notebook (ep_cim_loop.ipynb). Each function saves a PNG under <WORK>/figs and shows it inline.
 Colors: accent Aggie Maroon #500000 (light #E3BDBD), secondary blue / purple / slate. No orange/red.
 GDS pictures: KLayout LayoutView with the open SKY130 layer properties (sky130A.lyp), text labels hidden."""
 import csv

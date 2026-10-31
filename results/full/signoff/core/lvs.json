@@ -3,8 +3,8 @@
  "top": "chip_core",
  "exit": 0,
  "flatglob": "nsw_* bias_beta_p* nudge_inj_p* wbuf_p* tp_ch_* tp_kv_*",
- "wall_s": 1.45,
- "maxrss_mb": 303.5,
+ "wall_s": 1.47,
+ "maxrss_mb": 303.9,
  "final": "Circuits match uniquely.",
  "top_cell": {
   "dev": [
@@ -17,7 +17,7 @@
   ],
   "result": "Netlists match with 32 symmetries with property errors."
  },
- "n_cells": 53,
+ "n_cells": 54,
  "cells_not_clean": {
   "wu_dlat": {
    "dev": [

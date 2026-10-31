@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """HOG class-AB op-amp 셀 (folded cascode + Hogervorst class-AB, SKY130 5 V) — EP 뉴런 열 피치 8.43 µm 에 세로로 쌓는다.
 
-바탕(사본): isscc_cac/sim/ep_demo/layout/devlib.py — 소자 그리기 규칙(세로 poly, 핑거 피치 L+0.29, S/D li1 0.17·met1 0.23,
+바탕(사본): cac_ep/sim/ep_demo/layout/devlib.py — 소자 그리기 규칙(세로 poly, 핑거 피치 L+0.29, S/D li1 0.17·met1 0.23,
             컨택 피치 0.36, npc, hvi) — 와 gen_otacs.py 의 방식(넷마다 met2 세로 레인, met1 가로 스트랩, Rz·Cc 그리기).
 회로: ../char/decks/hog_tr.spice (SKY130_OTA_HOG_TR, Cc 100 fF, Rz 3 kΩ) + 정합쌍 양끝 dummy.
 

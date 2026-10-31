@@ -1,6 +1,6 @@
 #!/bin/bash
 # opensrc/chip/run_step.sh 사본 — 도구 경로를 환경 변수로 받게만 바꿈 (Olympus 고정 경로 → MAGIC·NETGEN·PDK_ROOT), /usr/bin/time → nb_timeit.py.
-# 쓰임: MAGIC=… NETGEN=… PDK_ROOT=… OPENSRC=<repo>/isscc_cac/sim/ep_dr/opensrc signoff_step.sh read|drc|ext|lvs <gds> <top> <outdir> [cdl]
+# 쓰임: MAGIC=… NETGEN=… PDK_ROOT=… OPENSRC=<repo>/cac_ep/sim/ep_dr/opensrc signoff_step.sh read|drc|ext|lvs <gds> <top> <outdir> [cdl]
 #   read = Magic GDS 읽기만 · drc = Magic DRC (drc(full)) · ext = Magic 추출 + antenna · lvs = Netgen (ext 결과 + CDL)
 # 결과 요약: <outdir>/<단계>.json (opensrc/chip/summarize.py)
 set -u

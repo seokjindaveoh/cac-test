@@ -1,4 +1,4 @@
-# Python packages for ep_dr_oss.ipynb (versions used for the results in the notebook).
+# Python packages for ep_cim_loop.ipynb (versions used for the results in the notebook).
 # pip install -r env/requirements.txt      (the Docker image installs these into /opt/venv)
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.5.1+cpu ; platform_machine == "x86_64"     # training and circuit solver (CPU build)

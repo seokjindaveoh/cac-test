@@ -1,4 +1,4 @@
-"""Helpers used by every cell of ep_dr_oss.ipynb: run a shell command, time a notebook step, keep a time table.
+"""Helpers used by every cell of ep_cim_loop.ipynb: run a shell command, time a notebook step, keep a time table.
 
 The notebook stays readable because the bookkeeping lives here:
 
@@ -26,6 +26,15 @@ GROUP_NAMES = {
     'route': 'routing',
     'verify': 'verification',
 }
+
+# Some tools print short Korean messages (counts, notes); the notebook shows them in English (same meaning, longest phrase first)
+KO_EN = [('(정보) OBS 창: met3 128 곳', '(info) OBS windows: met3, 128 places'), ('(정보)', '(info)'), ('OBS 창', 'OBS windows'), ('대조: 모두 같음', 'check: all the same'), ('넓은 금속 둘레', 'edges of wide metal'), ('special 도형도 있는 넷', 'nets that also have special shapes'), ('도형도 있는 넷', 'nets that also have shapes'), ('패드 없는 core 핀', 'core pins without a pad'), ('core 핀 없는 패드', 'pads without a core pin'), ('lib/ subckt 겹침', 'lib/ subckt name clashes'), ('내용 다른 중복', 'duplicates with different content'), ('뺀 중복', 'duplicates removed'), ('안 쓰는 핀', 'unused pins'), ('VSS 묶음', 'tied to VSS'), ('핀 하나 넷', 'one-pin nets'), ('출력 둘 이상', 'nets with two or more drivers'), ('구동 없음', 'undriven nets'), ('대소문자 겹침', 'case clashes'), ('인스턴스', 'instances'), ('설정 쓰기', 'setting writes'), ('Python 예측', 'Python prediction'), ('예측', 'prediction'), ('core ↔ 안쪽 ring 틈', 'gap core ↔ inner ring'), ('안쪽', 'inner'), ('틈', 'gap'), ('비교기 줄', 'comparator row'), ('칸 줄', 'cell rows'), ('단락: 없음', 'shorts: none'), ('신호 핀', 'signal pins'), ('구조', 'structures'), ('행마다', 'per row'), ('시간 칸', 'time slots'), ('표본', 'samples'), ('도형', 'shapes'), (' 줄,', ' lines,'), (' 번,', ' times,'), (' 넷 ', ' nets '), ('넷', 'nets'), ('핀', 'pins'), ('줄', 'lines'), ('번', 'times'), ('곳', 'places'), ('창', 'windows'), ('겹침', 'clashes'), ('묶음', 'ties')]
+
+
+def en(s):
+    for a, b in KO_EN:
+        s = s.replace(a, b)
+    return s
 
 
 class StepRunner:
@@ -57,7 +66,7 @@ class StepRunner:
                                  cwd=cwd, env=full_env, timeout=timeout)
         lines = log.read_text(errors='ignore').splitlines()
         for line in (lines[-tail:] if tail else []):
-            print('   ', line[:220])
+            print('   ', en(line)[:220])
         short = cmd[:140] + ('…' if len(cmd) > 140 else '')
         print(f'  [{time.time() - t0:.1f} s, rc={rc}] {short}')
         if rc:

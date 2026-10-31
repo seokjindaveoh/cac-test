@@ -1,6 +1,6 @@
 # Analog Compute-in-Memory Automated Loop: Equilibrium-Propagation Inference and Training in the Chip Domain, from Network Training to a DRC/LVS-Clean SKY130 Chip with Open-Source Tools
 
-Code-a-Chip (CaC) notebook: equilibrium propagation (EP) on a 1T1R RRAM crossbar chip. One Jupyter notebook, [`ep_dr_oss.ipynb`](ep_dr_oss.ipynb), runs the whole design loop from top to bottom.
+Code-a-Chip (CaC) notebook: equilibrium propagation (EP) on a 1T1R RRAM crossbar chip. One Jupyter notebook, [`ep_cim_loop.ipynb`](ep_cim_loop.ipynb), runs the whole design loop from top to bottom.
 
 ## Authors
 **Seokjin Oh, Jinzhan Li, and Suin Yi†**<br>
@@ -32,62 +32,117 @@ seokjindaveoh@tamu.edu, jl90@tamu.edu, yisuin@tamu.edu<br>
 
 ## Folder
 ```
-ep_dr_cac/
-├── ep_dr_oss.ipynb            the notebook (run this)
+ep_cim_loop/
+├── ep_cim_loop.ipynb            the notebook (run this)
 ├── README.md, LICENSE
 ├── env/                       tool setup: Dockerfile, requirements.txt, colab_setup.sh, setup.sh
 ├── weights/                   saved network weights (nostab_5bit.npz)
 ├── results/                   saved runs: time tables, tool versions, DRC / LVS summaries
 └── src/
-    ├── isscc_cac/ep/                       EP training (EPConfig, EPNetwork, fit)              section 3
-    ├── isscc_cac/sim/ep_dr/
+    ├── cac_ep/ep/                       EP training (EPConfig, EPNetwork, fit)              section 3
+    ├── cac_ep/sim/ep_dr/
     │   ├── circuit.py, solver.py, data.py  circuit model, Newton solver, MNIST loader          sections 2–3
     │   ├── real_circuit/                   SPICE deck generators (weight-update block, chip)   sections 5, 7
     │   ├── layout/                         analog and array layout generators                  sections 5, 8
     │   ├── digital/, digital_oss/          RTL, testbenches, Yosys + OpenROAD flow             sections 4.3, 6, 8
     │   ├── layout/top/                     chip netlist, placement, routing, pad ring          sections 9–11
     │   └── opensrc/                        Magic / Netgen signoff, Xyce deck converters        sections 7, 12
-    ├── isscc_cac/sim/ep_demo/              SkyWater 5 V device models, ReRAM Verilog-A model
+    ├── cac_ep/sim/ep_demo/              SkyWater 5 V device models, ReRAM Verilog-A model
     └── sern_hog_classab_opamp/             op-amp layout generator                             section 5.4
 ```
 
 | Path | Content |
 |---|---|
-| `ep_dr_oss.ipynb` | the notebook (executed; all outputs and figures saved) |
+| `ep_cim_loop.ipynb` | the notebook (executed; all outputs and figures saved) |
 | `env/Dockerfile` | Docker image: IIC-OSIC-TOOLS 2026.10 (all EDA tools) + pinned Python packages + SKY130 PDK `c6d73a35` + this folder |
 | `env/requirements.txt` | pinned Python packages (CPU PyTorch) |
 | `env/colab_setup.sh` | Google Colab install (prebuilt Xyce bundle + public binaries), called by the setup cell |
 | `env/setup.sh`, `env/environment.yml` | install without Docker and without root (user space), called by the setup cell |
-| `src/isscc_cac/ep/` | EP training code (`EPConfig`, `EPNetwork`, `fit`) |
-| `src/isscc_cac/sim/ep_dr/` | circuit model and solver, SPICE deck generators (`real_circuit/`), layout generators (`layout/`), chip netlist / placement / routing / die (`layout/top/`), digital flow (`digital_oss/`), signoff scripts (`opensrc/`), notebook helpers (`layout/top/oss_nb/tools/`) |
-| `src/sern_hog_classab_opamp/`, `src/isscc_cac/sim/ep_demo/` | op-amp layout generator; SkyWater 5 V device models and the ReRAM Verilog-A model |
+| `env/run_apptainer.sh` | the Docker image steps with Apptainer / Singularity (HPC clusters without Docker) |
+| `src/cac_ep/ep/` | EP training code (`EPConfig`, `EPNetwork`, `fit`) |
+| `src/cac_ep/sim/ep_dr/` | circuit model and solver, SPICE deck generators (`real_circuit/`), layout generators (`layout/`), chip netlist / placement / routing / die (`layout/top/`), digital flow (`digital_oss/`), signoff scripts (`opensrc/`), notebook helpers (`layout/top/oss_nb/tools/`) |
+| `src/sern_hog_classab_opamp/`, `src/cac_ep/sim/ep_demo/` | op-amp layout generator; SkyWater 5 V device models and the ReRAM Verilog-A model |
 | `weights/` | saved network weights (`nostab_5bit.npz` = submitted, seeds 0 / 1 / 2) |
 | `results/` | saved runs: time tables, tool versions, DRC / LVS summaries |
 
 ## How to run
 
-### Recommended: Docker + Jupyter
-1. Install Docker (x86_64 Linux, or Docker Desktop on Windows / macOS with an Intel CPU).
-2. In this folder, build the image and start Jupyter:
-   ```bash
-   docker build -t ep_dr_cac -f env/Dockerfile .
-   docker run --rm -p 127.0.0.1:8888:8888 ep_dr_cac
-   ```
-3. Open <http://localhost:8888/lab/tree/ep_dr_oss.ipynb> and choose *Run all*.
-   The second cell sets the mode: `MODE = 'quick' | 'full'`, `TRAIN = 'load' | 'quick' | 'full'` (table below).
-   The setup cell finds all tools on `PATH` and installs nothing.
+### Which way to choose
+| What you want | Recommended way | Why |
+|---|---|---|
+| **Look through the flow** — QUICK mode (about 30 min) | any way below: Docker, Google Colab, or Linux without Docker | QUICK checks every step at block level; small tool-version differences do not change what you see |
+| **Reproduce the full demo** — FULL mode, with or without training | **Docker (strongly recommended)** | the image pins every tool to the versions that made the saved results (table "Tool versions"). Other ways install other builds of Magic, Netgen, OpenROAD and Yosys, so DRC counts, the synthesized digital netlists and the chip-level LVS can differ from the saved ones |
+| **Only read** | open the notebook on GitHub | it is saved with all outputs and figures |
 
-Without Jupyter, one command runs the notebook and writes the executed copy, the time table, the figures and all generated GDS / DEF / LVS files to `./out`:
+### Docker: set up and run (step by step)
+
+**1. Install Docker** (once)
+- **Linux (x86_64)** — Docker Engine:
+  ```bash
+  curl -fsSL https://get.docker.com | sh       # or your distribution's docker package
+  sudo usermod -aG docker $USER                # run docker without sudo; log out and in again
+  docker run --rm hello-world                  # check
+  ```
+- **Windows 10 / 11** — Docker Desktop with the WSL 2 backend; run the commands below in a WSL (Ubuntu) terminal.
+- **macOS with an Intel CPU** — Docker Desktop.
+- **Apple silicon / other ARM64** — the image also builds natively (ARM64 build of the same base image) and QUICK runs, but the digital synthesis differs from x86_64 and the chip LVS does not match the saved netlist; for FULL use an x86_64 machine (or `docker build --platform linux/amd64 ...`, emulated and much slower).
+- **Resources** (Docker Desktop → Settings → Resources): at least 4 CPUs (16 recommended for FULL), 16 GB memory, 40 GB free disk.
+
+**2. Get this folder**
 ```bash
-docker run --rm -v "$PWD/out:/home/designer/out" ep_dr_cac \
-  python3 -m papermill ep_dr_oss.ipynb /home/designer/out/ep_dr_oss_out.ipynb -p MODE quick -p WORK /home/designer/out/work
+git clone https://github.com/seokjindaveoh/cac-test.git
+cd cac-test
 ```
-If the host folder is not writable, add `--user $(id -u):$(id -g)`.
 
-### Other ways
-- **View only** — open the notebook on GitHub; it is saved with all outputs.
-- **Google Colab** — [open the notebook in Colab](https://colab.research.google.com/github/seokjindaveoh/cac-test/blob/main/ep_dr_oss.ipynb) and choose *Run all*; the setup cell clones this repository and installs the tools (`env/colab_setup.sh`).
-- **Linux without Docker and without root** — `pip install --user -r env/requirements.txt`, then run the notebook; the setup cell installs the tools in user space (`env/setup.sh`: Magic, Netgen, OpenROAD, Yosys, Icarus Verilog, PDK, and a source build of Xyce; about 2 h once).
+**3. Build the image** (once; about 10–20 min and 18 GB, mostly the base image download)
+```bash
+docker build -t ep_cim_loop -f env/Dockerfile .
+```
+What the build does (`env/Dockerfile`):
+1. starts from `hpretl/iic-osic-tools:2026.10` — all EDA tools (Yosys, OpenROAD, Magic, Netgen, Xyce, Icarus Verilog, KLayout);
+2. installs the pinned Python packages (`env/requirements.txt`, CPU PyTorch) into `/opt/venv`;
+3. downloads the SKY130 PDK build `c6d73a35` with volare into `/home/designer/pdk/volare`;
+4. copies this folder to `/home/designer/ep_cim_loop`.
+
+**4a. Run with Jupyter**
+```bash
+docker run --rm -p 127.0.0.1:8888:8888 ep_cim_loop
+```
+Open <http://localhost:8888/lab/tree/ep_cim_loop.ipynb>. In the second cell choose the mode — `MODE = 'quick' | 'full'`, `TRAIN = 'load' | 'quick' | 'full'` (table below) — then *Run → Run All Cells*.
+The setup cell finds every tool on `PATH` and installs nothing. Outputs stay inside the container; use 4b to keep them.
+
+**4b. Run without Jupyter, keep all outputs on the host**
+```bash
+mkdir -p out
+docker run --rm --user $(id -u):$(id -g) -v "$PWD/out:/home/designer/out" ep_cim_loop \
+  python3 -m papermill ep_cim_loop.ipynb /home/designer/out/ep_cim_loop_out.ipynb \
+  -p MODE full -p TRAIN full -p WORK /home/designer/out/work
+```
+`./out` then holds the executed notebook, the time table (`work/times.md`), the figures (`work/figs/`) and every generated GDS / DEF / netlist / DRC / LVS file. Use `-p MODE quick -p TRAIN load` for the 30-min run.
+
+**5. Check that the run is good**
+- the last cell prints the time table and `0 failed`;
+- section 3: "new weights vs submitted weights ... identical" (with `TRAIN='full'`);
+- section 12: core and die LVS "Circuits match uniquely".
+
+**Troubleshooting**
+| Message | Fix |
+|---|---|
+| `permission denied ... docker.sock` | add your user to the `docker` group (step 1) and log in again |
+| cannot write to `./out` | keep `--user $(id -u):$(id -g)`, or `chmod a+w out` |
+| port 8888 already in use | `-p 127.0.0.1:8889:8888`, then open port 8889 |
+| downloads fail behind a proxy | `docker build --build-arg http_proxy --build-arg https_proxy ...` and `docker run -e http_proxy -e https_proxy ...` |
+| `no space left on device` | free disk with `docker system prune`; the image needs about 18 GB |
+
+**HPC cluster without Docker (Apptainer / Singularity)** — the same image steps run with Apptainer; tested on a cluster node with a fresh account (QUICK, 0 failed):
+```bash
+bash env/run_apptainer.sh ../cac_run quick load      # or: full full  (run folder outside this folder)
+```
+The script pulls the base image from Docker Hub, repeats steps 2–4 of the Dockerfile in user space and runs the notebook with papermill (outputs in `../cac_run/home/out`). If the compute nodes have no direct internet, load the site's web proxy first (`http_proxy`, `https_proxy`).
+
+### Other ways (QUICK)
+- **Google Colab** — [open the notebook in Colab](https://colab.research.google.com/github/seokjindaveoh/cac-test/blob/main/ep_cim_loop.ipynb) and choose *Run all*. The setup cell clones this repository, downloads a prebuilt Xyce bundle (release `v1` of this repository) and installs the other tools with apt / conda / pip (`env/colab_setup.sh`).
+- **Linux without Docker and without root** — `pip install --user -r env/requirements.txt`, then run the notebook; the setup cell installs the tools in user space (`env/setup.sh`: Magic, Netgen, OpenROAD, Yosys and Icarus Verilog from conda-forge / public builds, the PDK, and a source build of Xyce, about 2 h once). Tool builds differ from the Docker image, so use it for QUICK.
 
 ## Modes and measured times
 One cluster node, 16 cores, 64 GB, in the Docker image (run with Singularity, same layers as `env/Dockerfile`).
@@ -96,7 +151,7 @@ One cluster node, 16 cores, 64 GB, in the Docker image (run with Singularity, sa
 |---|---|---|---:|
 | **QUICK** | `MODE=quick TRAIN=load` | saved weights; Xyce weight-update block; all layout generators; four digital blocks with Yosys + OpenROAD; netlist, placement, routing, pad ring; core + die LVS; DRC of the array block | 29 min |
 | **FULL** | `MODE=full TRAIN=load` | QUICK + Xyce chip read deck + Xyce read circuit on all 3,097 test images + DRC of the full core and die | 106 min |
-| **FULL + training** | `MODE=full TRAIN=full` | FULL + EP training (seed 0, 165,000 training images); the new weights are compared with the saved weights | about 140 min |
+| **FULL + training** | `MODE=full TRAIN=full` | FULL + EP training (seed 0, 165,000 training images); the new weights are compared with the saved weights | 144 min |
 
 The step-by-step times are in `results/` and at the end of the notebook.
 

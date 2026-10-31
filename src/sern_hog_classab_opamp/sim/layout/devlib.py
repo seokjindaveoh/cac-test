@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""[sern_hog 사본] 원본: isscc_cac/sim/ep_demo/layout/devlib.py — 바꾼 것: cut() 중심 격자 맞춤.
+"""[sern_hog 사본] 원본: cac_ep/sim/ep_demo/layout/devlib.py — 바꾼 것: cut() 중심 격자 맞춤.
 5 V 소자(g5v0d10v5) 그리기 공통부 — SERN 11_layout/04_drc_clean/scripts/gen_neuron.py 의 소자 규칙을 옮긴 것.
 
 규칙 (gen_neuron.py 에서 그대로, Magic drc(full) 0 건 이력):

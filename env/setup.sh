@@ -1,5 +1,5 @@
 #!/bin/bash
-# Tool setup for ep_dr_oss.ipynb (Code-a-Chip, equilibrium-propagation chip). Called by notebook cell (1); can also be run by hand.
+# Tool setup for ep_cim_loop.ipynb (Code-a-Chip, equilibrium-propagation chip). Called by notebook cell (1); can also be run by hand.
 #   bash env/setup.sh <ENV folder> [part ...]     parts = mamba eda dig openroad py pdk xyce  (default: all)
 # Docker image (env/Dockerfile): all EDA tools are already on PATH -> with no parts given, only "py" and "pdk" are checked (both return at once).
 # Otherwise everything is installed in user space (no root; needs python3 >= 3.10, curl, tar, bzip2 on x86_64 Linux):
@@ -58,7 +58,7 @@ do_eda() {
 do_dig() {   # Yosys + Icarus Verilog (digital blocks, section 8) from conda-forge, launchers in ENV/bin
   [ -x "$E/dig/bin/yosys" ] && [ -x "$E/dig/bin/iverilog" ] || "$MM" create -y -p "$E/dig" -c conda-forge yosys iverilog || return 1
   for t in yosys iverilog vvp; do printf '#!/bin/bash\nexec %s "$@"\n' "$E/dig/bin/$t" > "$E/bin/$t"; chmod +x "$E/bin/$t"; done
-  "$E/bin/yosys" -V && "$E/bin/iverilog" -V 2>&1 | head -1
+  "$E/bin/yosys" -V && { "$E/bin/iverilog" -V 2>&1 || true; } | head -1   # iverilog -V exits 1 (no input file)
 }
 
 do_openroad() {
