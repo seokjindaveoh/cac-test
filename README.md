@@ -2,6 +2,8 @@
 
 Code-a-Chip (CaC) notebook: equilibrium propagation (EP) on a 1T1R RRAM crossbar chip. One Jupyter notebook, [`ep_cim_loop.ipynb`](ep_cim_loop.ipynb), runs the whole design loop from top to bottom.
 
+**Run it with Docker** (`env/Dockerfile`): the flow uses many EDA tools whose versions must match, and the image pins all of them (see [How to run](#how-to-run)).
+
 ## Authors
 **Seokjin Oh, Jinzhan Li, and Suin Yi†**<br>
 Department of Electrical and Computer Engineering, Texas A&M University, College Station, TX 77843, USA<br>
@@ -9,16 +11,32 @@ seokjindaveoh@tamu.edu, jl90@tamu.edu, yisuin@tamu.edu<br>
 † Corresponding author: Suin Yi (yisuin@tamu.edu)
 
 **Contributions**
-- **S. Oh** — original author of the EP circuit implemented here (Micromachines 2023 [3]) and of its weight-update circuit (Nanomaterials 2025 [4]). Planned this chip and its design, defined the automated design flow, and implemented it end to end: network training on the circuit model, SPICE deck generators and circuit simulation, analog and array layout generators, digital RTL and the Yosys + OpenROAD flow, chip netlist, placement, routing, pad ring, DRC / LVS signoff, and the notebook.
+- **S. Oh** — original author of the EP circuit implemented here, including its weight-update circuit (Micromachines 2023 [3]). Planned this chip and its design, defined the automated design flow, and implemented it end to end: network training on the circuit model, SPICE deck generators and circuit simulation, analog and array layout generators, digital RTL and the Yosys + OpenROAD flow, chip netlist, placement, routing, pad ring, DRC / LVS signoff, and the notebook.
 - **J. Li** — verification of the automated design loop; data and loop verification of the network's inference and training.
 - **S. Yi** — supervision.
+
+## Start here (3 steps, Docker)
+1. **Build the image once**, in this folder (needs Docker; about 15 min, 18 GB):
+   `docker build -t ep_cim_loop -f env/Dockerfile .`
+2. **Start Jupyter:** `docker run --rm -p 127.0.0.1:8888:8888 ep_cim_loop`
+   Open <http://localhost:8888/lab/tree/ep_cim_loop.ipynb> — the notebook is already inside the image; nothing else to install.
+3. **Choose the mode in the first code cell (Parameters), then Run → Run All Cells.**
+   - First run: keep `MODE='quick'` (29 min) — every section runs at block level; use it to check that everything works.
+   - To reproduce all saved results: `MODE='full'` (112 min) — adds the chip-level simulation, the read circuit on all 3,097 test images and the full-chip DRC.
+   - To retrain the network as well: `TRAIN='full'` (+32 min) — the new weights are compared with the submitted ones.
+
+No Jupyter? One command runs the whole notebook and saves everything to `./out` (step 4b under [How to run](#how-to-run)).
+
+**Google Colab instead of Docker:** click the "Open in Colab" badge at the top of the notebook and choose *Run all*.
+You do not run any script by hand: the first cells take this folder from the official repository and install the tools themselves (`env/colab_setup.sh`, about 2 min).
+Use QUICK on Colab; section 8 (digital place-and-route) needs the Docker image (see the note at the start of [How to run](#how-to-run)).
 
 ## What this work is about
 - **Equilibrium propagation (EP)** trains a network with local rules: each weight changes from the voltages at its own two ends, measured once in a free phase and once in a slightly nudged phase [1, 2].
   Backpropagation needs a separate global backward pass through the whole network; EP does not, which makes it attractive for energy-efficient on-chip learning.
 - **The catch in software**: each EP step needs the equilibrium of the network (the minimum of its energy), which a computer has to find with an iterative numerical solver for every image.
 - **In a circuit** this step disappears: a resistive network settles to that equilibrium by itself (Kirchhoff's laws), so the cost that makes EP slow in software is paid by physics [2, 5].
-- **Main content: EP of Scellier and Bengio 2017 [1] on a chip, with the architecture of two works together** — the deep resistive network (DRN) of Scellier 2024 [5] for the network structure, and the memristor-crossbar EP circuit of S. Oh et al., *Micromachines* 2023 [3] (cited by 21, Google Scholar, Oct. 2026) for the circuit: two 1T1R crossbars (free and nudge), diode-clamp neurons, and the sign-based weight update with a fixed conductance step. The weight-update circuit follows [4] (cited by 4).
+- **Main content: EP of Scellier and Bengio 2017 [1] on a chip, with the architecture of two works together** — the deep resistive network (DRN) of Scellier 2024 [5] for the network structure, and the memristor-crossbar EP circuit of S. Oh et al., *Micromachines* 2023 [3] (cited by 21, Google Scholar, Oct. 2026) for the circuit: two 1T1R crossbars (free and nudge), diode-clamp neurons, and the sign-based weight update with a fixed conductance step. The weight-update circuit is also from [3].
 - **This notebook** turns that architecture into an **automated design loop**:
   network training on the circuit model → SPICE checks of every block → layout generators → digital blocks from RTL → chip assembly → DRC / LVS, all with open-source tools.
 
@@ -35,7 +53,7 @@ seokjindaveoh@tamu.edu, jl90@tamu.edu, yisuin@tamu.edu<br>
 ep_cim_loop/
 ├── ep_cim_loop.ipynb            the notebook (run this)
 ├── README.md, LICENSE
-├── env/                       tool setup: Dockerfile, requirements.txt, colab_setup.sh, setup.sh
+├── env/                       tool setup: Dockerfile, requirements.txt, colab_setup.sh (+ tools/ Xyce bundle for Colab), setup.sh
 ├── weights/                   saved network weights (nostab_5bit.npz)
 ├── results/                   saved runs: time tables, tool versions, DRC / LVS summaries
 └── src/
@@ -56,7 +74,7 @@ ep_cim_loop/
 | `ep_cim_loop.ipynb` | the notebook (executed; all outputs and figures saved) |
 | `env/Dockerfile` | Docker image: IIC-OSIC-TOOLS 2026.10 (all EDA tools) + pinned Python packages + SKY130 PDK `c6d73a35` + this folder |
 | `env/requirements.txt` | pinned Python packages (CPU PyTorch) |
-| `env/colab_setup.sh` | Google Colab install (prebuilt Xyce bundle + public binaries), called by the setup cell |
+| `env/colab_setup.sh`, `env/tools/` | Google Colab install: prebuilt Xyce bundle in `env/tools/` (with its licenses inside) + public binaries; called by the setup cell (not used by Docker) |
 | `env/setup.sh`, `env/environment.yml` | install without Docker and without root (user space), called by the setup cell |
 | `env/run_apptainer.sh` | the Docker image steps with Apptainer / Singularity (HPC clusters without Docker) |
 | `src/cac_ep/ep/` | EP training code (`EPConfig`, `EPNetwork`, `fit`) |
@@ -67,10 +85,15 @@ ep_cim_loop/
 
 ## How to run
 
+> **Docker is strongly recommended — for QUICK and for FULL.**
+> The flow uses many EDA tools together (Yosys, OpenROAD, Magic, Netgen, Xyce, KLayout, Icarus Verilog), and the scripts depend on their exact versions.
+> The Docker image (`env/Dockerfile`) pins every tool, the PDK build and the Python packages to the versions that made the saved results; with it every cell of this notebook runs (QUICK and FULL tested, 0 failed).
+> Google Colab and Linux without Docker install other public builds. Known limit: their OpenROAD build (Dec. 2024) lacks a function used by the digital place-and-route script, so **section 8 (the four digital blocks) and the placement step fail there**; the later sections then use the saved digital blocks (chip LVS still matches).
+
 ### Which way to choose
 | What you want | Recommended way | Why |
 |---|---|---|
-| **Look through the flow** — QUICK mode (about 30 min) | any way below: Docker, Google Colab, or Linux without Docker | QUICK checks every step at block level; small tool-version differences do not change what you see |
+| **Look through the flow** — QUICK mode (about 30 min) | **Docker**; Google Colab or Linux without Docker also run it, except section 8 (see above) | QUICK checks every step at block level |
 | **Reproduce the full demo** — FULL mode, with or without training | **Docker (strongly recommended)** | the image pins every tool to the versions that made the saved results (table "Tool versions"). Other ways install other builds of Magic, Netgen, OpenROAD and Yosys, so DRC counts, the synthesized digital netlists and the chip-level LVS can differ from the saved ones |
 | **Only read** | open the notebook on GitHub | it is saved with all outputs and figures |
 
@@ -142,7 +165,7 @@ bash env/run_apptainer.sh ../cac_run quick load      # or: full full  (run folde
 The script pulls the base image from Docker Hub, repeats steps 2–4 of the Dockerfile in user space and runs the notebook with papermill (outputs in `../cac_run/home/out`). If the compute nodes have no direct internet, load the site's web proxy first (`http_proxy`, `https_proxy`).
 
 ### Other ways (QUICK)
-- **Google Colab** — [open the notebook in Colab](https://colab.research.google.com/github/sscs-ose/sscs-ose-code-a-chip.github.io/blob/main/ISSCC27/submitted_notebooks/ep_cim_loop/ep_cim_loop.ipynb) and choose *Run all*. The setup cell takes this folder from the official Code-a-Chip repository (sparse checkout; before the pull request is merged, from the submission fork), downloads a prebuilt Xyce bundle (a release file, 101 MB, too large for the repository) and installs the other tools with apt / conda / pip (`env/colab_setup.sh`).
+- **Google Colab** — [open the notebook in Colab](https://colab.research.google.com/github/sscs-ose/sscs-ose-code-a-chip.github.io/blob/main/ISSCC27/submitted_notebooks/ep_cim_loop/ep_cim_loop.ipynb) and choose *Run all*. The setup cell takes this folder from the official Code-a-Chip repository (sparse checkout), uses the prebuilt Xyce bundle shipped in `env/tools/` (Ubuntu 22.04 x86_64, 97 MiB) and installs the other tools with apt / conda / pip (`env/colab_setup.sh`).
 - **Linux without Docker and without root** — `pip install --user -r env/requirements.txt`, then run the notebook; the setup cell installs the tools in user space (`env/setup.sh`: Magic, Netgen, OpenROAD, Yosys and Icarus Verilog from conda-forge / public builds, the PDK, and a source build of Xyce, about 2 h once). Tool builds differ from the Docker image, so use it for QUICK. Known limit of both Colab and Linux without Docker: they install the public OpenROAD build of Dec. 2024, which lacks a function used by the digital place-and-route script, so section 8 (the four digital blocks) and the placement step fail there and the later sections use the saved digital blocks (chip LVS still matches). Use Docker to run section 8.
 
 ## Modes and measured times
@@ -152,7 +175,7 @@ One cluster node, 16 cores, 64 GB, in the Docker image (run with Singularity, sa
 |---|---|---|---:|
 | **QUICK** | `MODE=quick TRAIN=load` | saved weights; Xyce weight-update block; all layout generators; four digital blocks with Yosys + OpenROAD; netlist, placement, routing, pad ring; core + die LVS; DRC of the array block | 29 min |
 | **FULL** | `MODE=full TRAIN=load` | QUICK + Xyce chip read deck + Xyce read circuit on all 3,097 test images + DRC of the full core and die | 112 min |
-| **FULL + training** | `MODE=full TRAIN=full` | FULL + EP training (seed 0, 165,000 training images); the new weights are compared with the saved weights | 144 min |
+| **FULL + training** | `MODE=full TRAIN=full` | FULL + EP training (seed 0, 165,000 training images); the new weights are compared with the saved weights | 124–144 min |
 
 The step-by-step times are in `results/` and at the end of the notebook.
 
@@ -180,7 +203,7 @@ The step-by-step times are in `results/` and at the end of the notebook.
 1. B. Scellier and Y. Bengio, "Equilibrium propagation: bridging the gap between energy-based models and backpropagation," *Frontiers in Computational Neuroscience*, vol. 11, 24, 2017.
 2. J. Kendall, R. Pantone, K. Manickavasagam, Y. Bengio, and B. Scellier, "Training end-to-end analog neural networks with equilibrium propagation," arXiv:2006.01981, 2020.
 3. **S. Oh, J. An, S. Cho, R. Yoon, and K.-S. Min, "Memristor crossbar circuits implementing equilibrium propagation for on-device learning," *Micromachines*, vol. 14, no. 7, 1367, 2023, doi:10.3390/mi14071367 (cited by 21, Google Scholar, Oct. 2026) — the circuit implemented in this work.**
-4. S. Oh, R. Yoon, and K.-S. Min, "Defect-tolerant memristor crossbar circuits for local learning neural networks," *Nanomaterials*, vol. 15, no. 3, 213, 2025, doi:10.3390/nano15030213 (cited by 4, Google Scholar, Oct. 2026) — weight-update circuit.
+4. S. Oh, R. Yoon, and K.-S. Min, "Defect-tolerant memristor crossbar circuits for local learning neural networks," *Nanomaterials*, vol. 15, no. 3, 213, 2025, doi:10.3390/nano15030213 (cited by 4, Google Scholar, Oct. 2026) — defect-tolerant crossbar circuits for local learning (related work by the same authors).
 5. B. Scellier, "A fast algorithm to simulate nonlinear resistive networks," *Proc. ICML*, 2024 — deep resistive network (DRN).
 6. R. Hogervorst, J. P. Tero, R. G. H. Eschauzier, and J. H. Huijsing, "A compact power-efficient 3 V CMOS rail-to-rail input/output operational amplifier for VLSI cell libraries," *IEEE J. Solid-State Circuits*, vol. 29, no. 12, pp. 1505–1513, 1994.
 7. SkyWater SKY130 PDK (open_pdks) and its ReRAM cell model `sky130_fd_pr_reram__reram_cell`.
